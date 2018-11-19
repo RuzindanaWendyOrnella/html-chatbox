@@ -7,13 +7,13 @@ How to build an HTML chatbox with Chatkit - [https://pusher.com/tutorials/html-c
 Clone the project repository by running the command below if you use SSH
 
 ```
-$ git clone git@github.com:ammezie/html-chatbox.git
+$ git clone git@github.com:adelowo/html-chatbox.git
 ```
 
 If you use https, use this instead
 
 ```
-$ git clone https://github.com/ammezie/html-chatbox.git
+$ git clone https://github.com/adelowo/html-chatbox.git
 ```
 
 After cloning,run:
