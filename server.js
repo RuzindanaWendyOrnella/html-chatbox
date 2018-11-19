@@ -1,57 +1,57 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const cors = require('cors')
-const Chatkit = require('@pusher/chatkit-server')
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const Chatkit = require('@pusher/chatkit-server');
 
-const app = express()
+const app = express();
 
 const chatkit = new Chatkit.default({
-  instanceLocator: 'v1:us1:08583c18-fb69-4ed2-a53d-5b07a6a2fb0f',
-  key: 'af2707e9-0e48-4044-9cf2-8f195ac84f90:wp00dxhTf1+UcERNpmCZJxAzH3y4MIg6Kin0xcemR4I='
-})
+  instanceLocator: 'YOUR_INSTANCE_LOCATOR',
+  key: 'YOUR_SECRET_KEY',
+});
 
-app.use(bodyParser.urlencoded({
-  extended: false
-}))
-app.use(bodyParser.json())
-app.use(cors())
+app.use(
+  bodyParser.urlencoded({
+    extended: false,
+  })
+);
+app.use(bodyParser.json());
+app.use(cors());
 
 app.post('/users', (req, res) => {
-  const {
-    username
-  } = req.body
+  const { username } = req.body;
 
   chatkit
     .createUser({
       id: username,
-      name: username
+      name: username,
     })
     .then(() => {
-      res.sendStatus(201)
+      res.sendStatus(201);
     })
     .catch(err => {
       if (err.error === 'services/chatkit/user_already_exists') {
-        console.log(`User already exists: ${username}`)
-        res.sendStatus(200)
+        console.log(`User already exists: ${username}`);
+        res.sendStatus(200);
       } else {
-        res.status(err.status).json(err)
+        res.status(err.status).json(err);
       }
-    })
-})
+    });
+});
 
 app.post('/authenticate', (req, res) => {
   const authData = chatkit.authenticate({
-    userId: req.query.user_id
-  })
-  res.status(authData.status).send(authData.body)
-})
+    userId: req.query.user_id,
+  });
+  res.status(authData.status).send(authData.body);
+});
 
-const port = 3001
+const port = 3001;
 
 app.listen(port, err => {
   if (err) {
-    console.log(err)
+    console.log(err);
   } else {
-    console.log(`Running on port ${port}`)
+    console.log(`Running on port ${port}`);
   }
-})
+});
