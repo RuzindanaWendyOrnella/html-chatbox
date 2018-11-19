@@ -22,6 +22,9 @@ After cloning,run:
 $ npm install
 ```
 
+Then update where required your API keys where neccessary, also update the
+`ROOM_ID` constant in `index.html` to match your own room number.
+
 ### Prerequisites
 
 #### Sign up for Chatkit
@@ -43,7 +46,7 @@ Then the client:
 $ http-sever
 ```
 
-> **Note:** I'm using `http-sever` to start the client, you can use your preferred development server. 
+> **Note:** I'm using `http-sever` to start the client, you can use your preferred development server.
 
 
 and visit [http://localhost:8080/](http://localhost:8080/) to see the application in action.
