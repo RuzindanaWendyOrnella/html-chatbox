@@ -66,96 +66,106 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/@pusher/chatkit@0.7.12/dist/web/chatkit.js"></script>
+  <script src="https://unpkg.com/@pusher/chatkit-client"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
-    const usernameForm = document.getElementById('username-form')
 
-    usernameForm.addEventListener('submit', (e) => {
-      e.preventDefault()
+const ROOM_ID = '21378459';
 
-      const username = e.target.username.value
+const usernameForm = document.getElementById('username-form');
 
-      axios.post('http://localhost:3001/users', { username })
-        .then(() => {
-          document.getElementById('join').style.display = 'none'
-          document.getElementById('chatbox').style.display = 'block'
+usernameForm.addEventListener('submit', e => {
+  e.preventDefault();
 
-          const tokenProvider = new Chatkit.TokenProvider({
-            url: 'http://localhost:3001/authenticate'
-          })
+  const username = e.target.username.value;
 
-          const chatManager = new Chatkit.ChatManager({
-            instanceLocator: 'INSTANCE_LOCATOR',
-            userId: username,
-            tokenProvider
-          })
+  axios
+    .post('http://localhost:3001/users', { username })
+    .then(() => {
+      document.getElementById('join').style.display = 'none';
+      document.getElementById('chatbox').style.display = 'block';
 
-          chatManager
-            .connect()
-            .then(currentUser => {
-              currentUser.subscribeToRoom({
-                roomId: 8238816,
-                hooks: {
-                  onNewMessage: message => {
-                    const { senderId, text } = message
+      const tokenProvider = new Chatkit.TokenProvider({
+        url: 'http://localhost:3001/authenticate',
+      });
 
-                    const messageList = document.getElementById('messageList')
-                    const messageUser = document.createElement('dt')
-                    const messageBody = document.createElement('dd')
+      const chatManager = new Chatkit.ChatManager({
+        instanceLocator: 'v1:us1:08583c18-fb69-4ed2-a53d-5b07a6a2fb0f',
+        userId: username,
+        tokenProvider,
+      });
 
-                    messageUser.appendChild(document.createTextNode(senderId))
-                    messageBody.appendChild(document.createTextNode(text))
+      chatManager
+        .connect()
+        .then(currentUser => {
+          currentUser
+            .subscribeToRoom({
+              roomId: ROOM_ID,
+              hooks: {
+                onMessage: message => {
+                  const { senderId, text } = message;
 
-                    messageList.appendChild(messageUser)
-                    messageList.appendChild(messageBody)
-                  },
-                  onUserCameOnline: user => {
-                    if (currentUser.id !== user.id) {
-                      addUserElement(user)
-                    }
-                  },
-                  onUserWentOffline: user => {
-                    const singleUser = document.getElementById(user.id)
-                    singleUser.parentNode.removeChild(singleUser)
+                  const messageList = document.getElementById('messageList');
+                  const messageUser = document.createElement('dt');
+                  const messageBody = document.createElement('dd');
+
+                  messageUser.appendChild(document.createTextNode(senderId));
+                  messageBody.appendChild(document.createTextNode(text));
+
+                  messageList.appendChild(messageUser);
+                  messageList.appendChild(messageBody);
+                },
+                onPresenceChanged: (state, user) => {
+                  if (currentUser.id !== user.id) {
+                    addUserElement(user);
+                  }
+
+                  if (state.current === 'offline') {
+                    const singleUser = document.getElementById(user.id);
+                    singleUser.parentNode.removeChild(singleUser);
                   }
                 },
-                messageLimit: 100
-              }).then(() => {
-                currentUser.rooms[0].users.forEach(user => {
-                  if (user.presence.state === 'online') {
-                    addUserElement(user)
-                  }
-                })
+              },
+              messageLimit: 100,
+            })
+            .then(() => {
+              currentUser.rooms[0].users.forEach(user => {
+                if (user.presence.state === 'online') {
+                  addUserElement(user);
+                }
+              });
 
-                const sendMessage = document.getElementById('sendMessage')
-                sendMessage.addEventListener("submit", e => {
-                  e.preventDefault()
+              const sendMessage = document.getElementById('sendMessage');
+              sendMessage.addEventListener('submit', e => {
+                e.preventDefault();
 
-                  const message = e.target.message.value
+                const message = e.target.message.value;
 
-                  currentUser.sendMessage({
-                    text: message,
-                    roomId: 8238816
-                  })
+                currentUser.sendMessage({
+                  text: message,
+                  roomId: ROOM_ID,
+                });
 
-                  e.target.message.value = ''
-                })
-              }).catch(error => console.error(error))
-            }).catch(error => console.error(error))
-        }).catch(error => console.error(error))
+                e.target.message.value = '';
+              });
+            })
+            .catch(error => console.error(error));
+        })
+        .catch(error => console.error(error));
     })
+    .catch(error => console.error(error));
+});
 
-    function addUserElement(user) {
-      const onlineUsers = document.getElementById('onlineUsers')
-      const singleUser = document.createElement('li')
+function addUserElement(user) {
+  const onlineUsers = document.getElementById('onlineUsers');
+  const singleUser = document.createElement('li');
 
-      singleUser.className = 'list-group-item'
-      singleUser.id = user.id
+  singleUser.className = 'list-group-item';
+  singleUser.id = user.id;
 
-      singleUser.appendChild(document.createTextNode(user.name))
-      onlineUsers.appendChild(singleUser)
-    }
+  singleUser.appendChild(document.createTextNode(user.name));
+  onlineUsers.appendChild(singleUser);
+}
   </script>
 
 </body>
