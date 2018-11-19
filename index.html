@@ -121,8 +121,7 @@ usernameForm.addEventListener('submit', e => {
                   }
 
                   if (state.current === 'offline') {
-                    const singleUser = document.getElementById(user.id);
-                    singleUser.parentNode.removeChild(singleUser);
+                    document.getElementById(user.id).remove()
                   }
                 },
               },
