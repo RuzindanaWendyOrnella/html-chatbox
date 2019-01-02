@@ -90,7 +90,7 @@ usernameForm.addEventListener('submit', e => {
       });
 
       const chatManager = new Chatkit.ChatManager({
-        instanceLocator: 'v1:us1:08583c18-fb69-4ed2-a53d-5b07a6a2fb0f',
+        instanceLocator: 'PUSHER_INSTANCE_LOCATOR',
         userId: username,
         tokenProvider,
       });
